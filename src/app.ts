@@ -24,23 +24,33 @@ app.get('/', async(req: Request, res: Response) => {
     res.json(await userRepo.save([user1, user2]))
 })
 
-app.get('/find', async(req: Request, res: Response) => {
+app.get('/find-all', async(req: Request, res: Response) => {
     let userRepo =  AppDataSource.getRepository(User)
-    res.json(await userRepo.find({
-        select: [
-            "firstName"
-        ],
-        order: {
-            id: "desc"
-        }
-    }))
+    // res.json(await userRepo.find({
+    //     select: [
+    //         "firstName"
+    //     ],
+    //     order: {
+    //         id: "desc"
+    //     }
+    // }))
+    res.json(await userRepo.find())
+
 })
 
-// app.get('/:id', async(req: Request, res: Response) => {
-//     const id = req.params
-//     let userRepo =  AppDataSource.getRepository(User)
-//     res.json(await userRepo.find({id}))
-// })
+app.get('/delete', async(req: Request, res: Response) => {
+    let userRepo =  AppDataSource.getRepository(User)
+    res.json(await userRepo.delete(1))
+})
+
+app.get('/update', async (req: Request, res: Response) => {
+    let userRepo = AppDataSource.getRepository(User);
+    await userRepo.update(9, {firstName: "Kader"});
+    const updatedUser = await userRepo.findOneBy({ id: 9 });
+    res.json(updatedUser);
+
+});
+
 
 app.listen(PORT, () => {
     console.log('Server connected')
