@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm"
+import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm"
 import { User } from "./user.entity";
 
 @Entity({name: "Profile"})
@@ -11,6 +11,7 @@ export class Profile {
 
     @Column({nullable: false})
     skill: string;
-
+    
+    @OneToOne(()=> User, (user)=> user.profile)
     user: User;
 }

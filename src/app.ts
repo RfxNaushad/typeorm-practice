@@ -118,7 +118,9 @@ app.get('/get-profile', async (req: Request, res: Response) => {
     const profileRepo = AppDataSource.getRepository(Profile);
     
     try {
-        const profiles = await profileRepo.find(); 
+        const profiles = await profileRepo.find({
+            relations: ["user"]
+        }); 
         res.status(200).json(profiles); 
     } catch (error: any) {
         console.error('Error fetching profiles:', error.message);
