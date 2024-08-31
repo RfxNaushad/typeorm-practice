@@ -1,4 +1,5 @@
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm"
+import { User } from "./user.entity";
 
 @Entity({name: "Profile"})
 export class Profile {
@@ -10,4 +11,6 @@ export class Profile {
 
     @Column({nullable: false})
     skill: string;
+
+    user: User;
 }

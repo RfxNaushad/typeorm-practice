@@ -54,18 +54,19 @@ AppDataSource.initialize().then(() => {
 //     }
 // });
 
-
+// user crud
 app.post('/create-user', async (req: Request, res: Response) => {
     const userRepo = AppDataSource.getRepository(User);
 
     try {
-        const { firstName, lastName, profile } = req.body;
 
-        const newUser = userRepo.create({ firstName, lastName, profile });
+        const data = req.body;
+        const newUser = userRepo.create(data);
         const savedUser = await userRepo.save(newUser);
-
         res.status(201).json(savedUser);
+
     } catch (error: any) {
+
         console.error('Error creating user:', error.message);
         res.status(500).json({ message: 'Internal server error', error: error.message });
     }
@@ -98,7 +99,8 @@ app.get('/update', async (req: Request, res: Response) => {
 
 });
 
-//  creating Profile
+
+//  Profile Crud
 app.post('/create-profile', async (req: Request, res: Response) => {
     const profileRepo = AppDataSource.getRepository(Profile);
     const data = req.body;

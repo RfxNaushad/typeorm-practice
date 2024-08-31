@@ -13,7 +13,7 @@ export class User {
     @Column()
     lastName: string;
     
-    @OneToOne(()=> Profile, {cascade: true})
+    @OneToOne(()=> Profile, (profile) => profile.user,  {cascade: true, eager: true})
     @JoinColumn()
     profile: Profile
 }
