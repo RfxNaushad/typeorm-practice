@@ -7,8 +7,8 @@ export class Student {
 	@PrimaryGeneratedColumn()
 	id: number;
 
-	@Column({nullable : false})
-	rollNo: string;
+    @Column({ nullable: false})
+    rollNo: string;
 
 	@Column({nullable : false})
 	firstName : string;
@@ -20,7 +20,7 @@ export class Student {
 	age : number;
 
     @ManyToMany(()=> Course , (course)=> course.students, {
-        cascade : true,
+        cascade : true
     })
     @JoinTable()
     courses : Course[]

@@ -183,15 +183,71 @@ app.get('/get-course', async (req: Request, res: Response) => {
     const courseRepo = AppDataSource.getRepository(Course)
 
     try {
-        const result = await courseRepo.find({
-            relations: ["students"]
-        }); 
+        const result = await courseRepo.find(); 
         res.status(200).json(result); 
     } catch (error: any) {
         console.error('Error fetching profiles:', error.message);
         res.status(500).json({ message: 'Internal server error', error: error.message });
     }
 } )
+
+
+//using query builder
+app.post('/create-student-builder', async (req: Request, res: Response) => {
+    const studentRepo = AppDataSource.getRepository(Student);
+    const data = req.body;
+
+    try {
+        const result = await studentRepo
+            .createQueryBuilder()
+            .insert() 
+            .into(Student) 
+            .values({
+                firstName: data.firstName, 
+                lastName: data.lastName,
+                rollNo: data.rollNo,
+                age: data.age, 
+            })
+            .returning('*') 
+            .execute();
+
+        res.status(201).json(result);
+    } catch (error: any) {
+        console.error('Error saving profile:', error.message);
+        res.status(500).json({ message: 'Internal server error', error: error.message });
+    }
+});
+
+app.get('/get-course-builder', async (req: Request, res: Response) => {
+    const courseRepo = AppDataSource.getRepository(Course);
+
+    try {
+        const result = await courseRepo
+            .createQueryBuilder("course")
+            .leftJoinAndSelect("course.students", "student") 
+            .getMany();
+
+        res.status(200).json(result);
+    } catch (error: any) {
+        console.error('Error fetching courses:', error.message);
+        res.status(500).json({ message: 'Internal server error', error: error.message });
+    }
+
+});
+
+app.get('/get-course', async (req: Request, res: Response) => {
+    try {
+        const students = await AppDataSource
+            .getRepository(Course)
+            .createQueryBuilder('course')
+            .getMany();
+
+        res.status(200).json(students);
+    } catch (error: any) {
+        console.error('Error fetching students:', error.message);
+        res.status(500).json({ message: 'Internal server error', error: error.message });
+    }
+});
 
 app.listen(PORT, () => {
     console.log('Server connected')
