@@ -5,6 +5,8 @@ import cors from 'cors';
 import { Profile } from "./entities/profile.entity";
 import { DataSource } from 'typeorm';
 import { Todo } from "./entities/todo.entity";
+import { Student } from "./entities/student.entity";
+import { Course } from "./entities/course.entity";
 
 const app = express()
 
@@ -132,10 +134,6 @@ app.get('/get-profile', async (req: Request, res: Response) => {
 
 // todo's many to one and one to many relation
 
-app.listen(PORT, () => {
-    console.log('Server connected')
-})
-
 app.post('/create-todo-user',async (req: Request, res: Response) => {
     const userRepo = AppDataSource.getRepository(User)
 
@@ -164,3 +162,37 @@ app.get('/find-todo', async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Internal server error', error: error.message });
     }
 } )
+
+// student to courses , many to many 
+app.post('/create-student',async (req: Request, res: Response) => {
+    const studentRepo = AppDataSource.getRepository(Student)
+
+    const data = req.body
+
+    try {
+        const result = await studentRepo.save(data);
+        res.status(201).json(result);
+    } catch (error: any) {
+        console.error('Error saving profile:', error.message);
+        res.status(500).json({ message: 'Internal server error', error: error.message });
+    }
+
+})
+
+app.get('/get-course', async (req: Request, res: Response) => {
+    const courseRepo = AppDataSource.getRepository(Course)
+
+    try {
+        const result = await courseRepo.find({
+            relations: ["students"]
+        }); 
+        res.status(200).json(result); 
+    } catch (error: any) {
+        console.error('Error fetching profiles:', error.message);
+        res.status(500).json({ message: 'Internal server error', error: error.message });
+    }
+} )
+
+app.listen(PORT, () => {
+    console.log('Server connected')
+})
