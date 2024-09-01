@@ -3,6 +3,8 @@ import { AppDataSource } from "./dataSource/dataSource";
 import { User } from "./entities/user.entity";
 import cors from 'cors';
 import { Profile } from "./entities/profile.entity";
+import { DataSource } from 'typeorm';
+import { Todo } from "./entities/todo.entity";
 
 const app = express()
 
@@ -128,6 +130,37 @@ app.get('/get-profile', async (req: Request, res: Response) => {
     }
 });
 
+// todo's many to one and one to many relation
+
 app.listen(PORT, () => {
     console.log('Server connected')
 })
+
+app.post('/create-todo-user',async (req: Request, res: Response) => {
+    const userRepo = AppDataSource.getRepository(User)
+
+    const data = req.body
+
+    try {
+        const result = await userRepo.save(data);
+        res.status(201).json(result);
+    } catch (error: any) {
+        console.error('Error saving profile:', error.message);
+        res.status(500).json({ message: 'Internal server error', error: error.message });
+    }
+
+})
+
+app.get('/find-todo', async (req: Request, res: Response) => {
+    const todo = AppDataSource.getRepository(Todo)
+
+    try {
+        const todos = await todo.find({
+            relations: ["user"]
+        }); 
+        res.status(200).json(todos); 
+    } catch (error: any) {
+        console.error('Error fetching profiles:', error.message);
+        res.status(500).json({ message: 'Internal server error', error: error.message });
+    }
+} )
